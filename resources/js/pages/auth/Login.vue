@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import axios from 'axios';
 import { LoaderCircle } from 'lucide-vue-next';
 
 defineProps<{
@@ -20,7 +21,9 @@ const form = useForm({
     remember: false,
 });
 
-const submit = () => {
+const submit = async () => {
+    await axios.get('/sanctum/csrf-cookie');
+
     form.post(route('login'), {
         onFinish: () => form.reset('password'),
     });
