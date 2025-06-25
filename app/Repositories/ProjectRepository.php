@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\DTOs\ProjectDto;
 use App\Models\Project;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -30,6 +31,18 @@ class ProjectRepository
                 $query->where('assignee_id', $user_id);
             })
             ->paginate($this->perPage);
+    }
+
+    public function createProject(ProjectDto $projectData): Project
+    {
+        $project = Project::create([
+            'creator_id' => $projectData->creator_id,
+            'deadline' => $projectData->deadline,
+            'description' => $projectData->description,
+            'title' => $projectData->title,
+        ]);
+
+        return $project;
     }
 
     /**
