@@ -26,6 +26,7 @@ class ProjectRepository
     public function getUserProjects(int $user_id): LengthAwarePaginator
     {
         return Project::with('creator')
+            ->withCount('tasks')
             ->where('creator_id', $user_id)
             ->orWhereHas('tasks', function ($query) use ($user_id) {
                 $query->where('assignee_id', $user_id);

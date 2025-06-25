@@ -2,8 +2,8 @@
 import ProjectCard from '@/components/ProjectCard.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/vue3';
+import { Project, type BreadcrumbItem } from '@/types';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -15,6 +15,11 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/projects',
     },
 ];
+
+const page = usePage();
+const projectsProp = page.props.projects as any;
+const projects: Project[] = projectsProp.data;
+console.log('projects', projects);
 </script>
 
 <template>
@@ -29,9 +34,7 @@ const breadcrumbs: BreadcrumbItem[] = [
             </div>
 
             <div class="flex flex-col gap-y-8">
-                <ProjectCard />
-                <ProjectCard />
-                <ProjectCard />
+                <ProjectCard v-for="(project, index) in projects" :key="index" :project="project" />
             </div>
         </div>
     </AppLayout>

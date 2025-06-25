@@ -17,7 +17,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('/projects')->group(function () {
         Route::get('/', [ProjectWebController::class, 'index'])->name('projects');
         Route::get('/create', [ProjectWebController::class, 'create'])->name('projects.create');
-        Route::get('/{project}', [ProjectWebController::class, 'show']);
+        Route::get('/{project}', [ProjectWebController::class, 'show'])->name('projects.show');
+        Route::get('/{project}/edit', [ProjectWebController::class, 'show'])->name('projects.edit');
 
     });
 

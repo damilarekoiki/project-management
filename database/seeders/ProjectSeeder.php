@@ -22,7 +22,7 @@ class ProjectSeeder extends Seeder
 
         // Create 10 projects assigned to random users
         Project::factory()
-            ->count(10)
+            ->count(40)
             ->create([
                 'creator_id' => fn () => $users->random()->id,
             ]);

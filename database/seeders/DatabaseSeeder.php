@@ -15,10 +15,16 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
+        /** @var array<string, mixed> $userData */
+        $userData = User::factory()->raw([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        User::updateOrCreate(
+            ['email' => $userData['email']],
+            $userData
+        );
 
         // Run additional seeders
         $this->call([
