@@ -4,7 +4,7 @@ import ProjectCard from '@/components/ProjectCard.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Project, type BreadcrumbItem } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -20,7 +20,15 @@ const breadcrumbs: BreadcrumbItem[] = [
 const page = usePage();
 const projectsProp = page.props.projects as any;
 const projects: Project[] = projectsProp.data;
-console.log('projects', projectsProp);
+
+const deleteProject = (project: Project) => {
+    const index = projects.findIndex((p) => p.id === project.id);
+    if (index !== -1) {
+        projects.splice(index, 1);
+    }
+
+    router.reload({ only: ['projects'] });
+};
 </script>
 
 <template>
@@ -35,7 +43,7 @@ console.log('projects', projectsProp);
             </div>
 
             <div class="flex flex-col gap-y-8">
-                <ProjectCard v-for="(project, index) in projects" :key="index" :project="project" />
+                <ProjectCard v-for="(project, index) in projects" :key="index" :project="project" @deleteProject="deleteProject" />
             </div>
 
             <Pagination :links="projectsProp.links" />

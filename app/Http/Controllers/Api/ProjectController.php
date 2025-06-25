@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\DTOs\ProjectDto;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectStoreRequest;
+use App\Models\Project;
 use App\Repositories\ProjectRepository;
 use App\Repositories\TaskRepository;
 use Illuminate\Http\JsonResponse;
@@ -59,4 +61,15 @@ class ProjectController extends Controller
     }
 
     // Todo: create project with its tasks; update project
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Project $project): JsonResponse
+    {
+        //
+        $project->delete();
+
+        return response()->json($project, 200);
+    }
 }
