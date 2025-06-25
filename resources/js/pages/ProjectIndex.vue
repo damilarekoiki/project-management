@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Pagination from '@/components/Pagination.vue';
 import ProjectCard from '@/components/ProjectCard.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -19,7 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const page = usePage();
 const projectsProp = page.props.projects as any;
 const projects: Project[] = projectsProp.data;
-console.log('projects', projects);
+console.log('projects', projectsProp);
 </script>
 
 <template>
@@ -36,6 +37,8 @@ console.log('projects', projects);
             <div class="flex flex-col gap-y-8">
                 <ProjectCard v-for="(project, index) in projects" :key="index" :project="project" />
             </div>
+
+            <Pagination :links="projectsProp.links" />
         </div>
     </AppLayout>
 </template>
