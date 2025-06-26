@@ -38,7 +38,7 @@ const deleteProject = (project: Project) => {
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
             <div class="mb-12 flex">
                 <Button variant="outline" as-child class="cursor-pointer">
-                    <Link as="Link" :href="route('projects.create')"> Create Project </Link>
+                    <Link as="Link" :href="route('projects.create')"> Create A New Project </Link>
                 </Button>
             </div>
 

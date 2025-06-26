@@ -41,7 +41,7 @@ export type Project = {
     description?: string;
     deadline?: string;
     creator: User;
-    tasks_count: number;
+    tasks_count?: number;
 };
 
 type Assignee = {

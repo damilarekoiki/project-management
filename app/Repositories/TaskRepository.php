@@ -5,19 +5,19 @@ namespace App\Repositories;
 use App\DTOs\TaskFilterDto;
 use App\Models\Project;
 use App\Models\Task;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\CursorPaginator;
 
 class TaskRepository
 {
     private int $perPage = 20;
 
     /**
-     * @return LengthAwarePaginator<int, Task>
-     *                                         Get projects associated with a user.
+     * @return CursorPaginator<int, Task>
+     *                                    Get tasks of a project associated with a user.
      */
-    public function getProjectTasks(int $project_id, int $user_id, ?TaskFilterDto $filters = null): LengthAwarePaginator
+    public function getProjectTasks(int $project_id, int $user_id, ?TaskFilterDto $filters = null): CursorPaginator
     {
-        return Task::where('id', $project_id)
+        return Task::where('project_id', $project_id)
             ->where(function ($query) use ($user_id) {
                 $query->where('assignee_id', $user_id)
                     ->orWhereHas('project', function ($query) use ($user_id) {
@@ -27,7 +27,9 @@ class TaskRepository
             ->when($filters && $filters->hasFilters(), function ($query) use ($filters) {
                 $query->filter($filters);
             })
-            ->paginate($this->perPage);
+            ->orderByDesc('updated_at')
+            ->orderByDesc('id')
+            ->cursorPaginate($this->perPage);
     }
 
     /**

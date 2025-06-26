@@ -1,13 +1,25 @@
-<script setup lang="ts">
-import ProjectCard from '@/components/ProjectCard.vue';
+<script lang="ts" setup>
+import InputError from '@/components/InputError.vue';
+import Task from '@/components/Task.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { type BreadcrumbItem } from '@/types';
-import { Head, router, useForm, usePage } from '@inertiajs/vue3';
-import { computed, ref, watch } from 'vue';
+import { Project, type BreadcrumbItem, type TaskType } from '@/types';
+import { Head, usePage } from '@inertiajs/vue3';
+import axios from 'axios';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+
+const page = usePage();
+const projectTasksProp = page.props.projectTasks as any;
+
+const project: Project = page.props.project as Project;
+const projectTasks: TaskType[] = projectTasksProp.data;
+
+const isAtBottom = ref(false);
+
+console.log(projectTasksProp);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -18,58 +30,160 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Projects',
         href: '/projects',
     },
+    {
+        title: 'Project',
+        href: '/projects/create',
+    },
 ];
 
-// Get initial filter values from props
-const page = usePage();
-const initialFilters = computed(() => page.props.filters || { status: '', due_date: '' });
+const today = new Date().toISOString().split('T')[0];
 
-// Filter states
-const status = ref(initialFilters.value.status || '');
-const dueDate = ref(initialFilters.value.due_date || '');
+const tasks = ref<TaskType[]>(projectTasks);
 
-// Status options
-// const statusOptions = [
-//     { value: '', label: 'All Statuses' },
-//     { value: 'pending', label: 'Pending' },
-//     { value: 'in_progress', label: 'In Progress' },
-//     { value: 'done', label: 'Done' },
-// ];
+console.log('protasks', projectTasks);
 
-// Apply filters when they change
-watch([status, dueDate], () => {
-    router.get(
-        route('projects'),
-        {
-            status: status.value,
-            due_date: dueDate.value,
-        },
-        {
-            preserveState: true,
-            replace: true,
-        },
-    );
+const tasksUrl = ref<string>(
+    route('api.projects.tasks.show', {
+        project: project.id,
+        cursor: projectTasksProp.next_cursor,
+    }),
+);
+
+const loadingMore = ref<boolean>(false);
+
+const form = ref<{
+    title: string;
+    description?: string;
+    deadline?: string;
+    tasks: TaskType[];
+}>({
+    title: project.title,
+    description: project.description,
+    deadline: project.deadline,
+    tasks: [],
 });
 
-const form = useForm({
-    title: '',
-    description: '',
-});
+const hasTaskError = ref<boolean>(false);
 
-const submit = () => {
-    form.post(route('projects.store'));
+const titleError = ref<string>('');
+
+const checkTaskError = () => {
+    const error = form.value.tasks.some((task: TaskType): boolean => {
+        return task.title == '';
+    });
+    hasTaskError.value = error;
 };
+
+// Add a new task to the DOM
+const addTask = () => {
+    tasks.value.push({
+        id: tasks.value[tasks.value.length - 1].id + 1,
+        title: '',
+        assignee_id: null,
+        status: 'pending',
+        due_date: '',
+    });
+    checkTaskError();
+};
+
+const addTaskToForm = (task: TaskType, taskId: number) => {
+    const taskIndex = form.value.tasks.findIndex((task: TaskType) => task.id == taskId);
+
+    if (taskIndex !== -1) {
+        form.value.tasks[taskIndex] = task;
+    } else {
+        form.value.tasks.push(task);
+    }
+    checkTaskError();
+};
+
+// Remove a task from the form and DOM
+const removeTask = (taskId: number): void => {
+    form.value.tasks = form.value.tasks.filter((task: TaskType) => {
+        return task.id !== taskId;
+    });
+    tasks.value = tasks.value.filter((task: TaskType) => {
+        return task.id !== taskId;
+    });
+    checkTaskError();
+};
+
+const hasFormError = computed((): boolean => {
+    return hasTaskError.value || form.value.title == '';
+});
+
+const submit = async () => {
+    try {
+        await axios.post(route('api.projects.store'), form.value);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+watch(
+    () => form.value.title,
+    () => {
+        if (form.value.title == '') {
+            titleError.value = 'The title field is required';
+        }
+    },
+);
+
+const loadMoreTasks = async () => {
+    if (!tasksUrl.value) return;
+
+    loadingMore.value = true;
+    console.log('next url', tasksUrl.value);
+
+    try {
+        const { data } = await axios.get(tasksUrl.value);
+        tasks.value = tasks.value.concat(data.data);
+        tasksUrl.value = data.next_page_url;
+    } finally {
+        loadingMore.value = false;
+    }
+};
+
+const handleScroll = () => {
+    const scrollTop = window.scrollY;
+    const windowHeight = window.innerHeight;
+    const docHeight = document.documentElement.scrollHeight;
+
+    const hasReachedBottom = scrollTop + windowHeight >= docHeight - 200;
+
+    if (hasReachedBottom && !isAtBottom.value) {
+        isAtBottom.value = true;
+        console.log('✅ Scrolled to bottom');
+        loadMoreTasks();
+    }
+
+    // Reset flag if user scrolls up
+    if (!hasReachedBottom && isAtBottom.value) {
+        isAtBottom.value = false;
+    }
+};
+
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll);
+});
 </script>
 
 <template>
-    <Head title="Projects" />
+    <Head title="Create Project" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-            <form @submit.prevent="submit" class="max-w-2xl space-y-6">
+            <h1 class="text-2xl font-bold">Create New Project</h1>
+
+            <div class="max-w-2xl space-y-6">
                 <div class="space-y-2">
                     <Label for="title">Project Title</Label>
-                    <Input id="title" v-model="form.title" required />
+                    <Input id="title" v-model="form.title" placeholder="Enter title for the project" />
+                    <InputError :message="titleError" v-if="titleError" />
                 </div>
 
                 <div class="space-y-2">
@@ -77,50 +191,31 @@ const submit = () => {
                     <Textarea id="description" v-model="form.description" rows="4" />
                 </div>
 
+                <div class="space-y-2">
+                    <Label for="deadline">Deadline</Label>
+                    <!-- <div class="bg-white"> -->
+                    <Input id="deadline" v-model="form.deadline" type="date" :min="today" class="!bg-white text-black" />
+
+                    <!-- </div> -->
+                </div>
+
+                <!-- Tasks Section -->
+                <div class="mt-16 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-medium">Tasks</h2>
+                        <Button type="button" size="sm" class="bg-blue-800 text-white hover:bg-blue-800" @click="addTask"> Add Task </Button>
+                    </div>
+
+                    <div v-for="task in tasks" :key="task.id" class="space-y-4 rounded-lg border p-4">
+                        <Task :initialTask="task" :showRemoveButton="true" :isEdit="false" @removeTask="removeTask" @addTaskToForm="addTaskToForm" />
+                    </div>
+                </div>
+
                 <div class="flex justify-end gap-x-2">
                     <Button type="button" variant="outline" :href="route('projects')"> Cancel </Button>
-                    <Button type="submit" :disabled="form.processing"> Create Project </Button>
+                    <Button type="submit" @click="submit" :disabled="hasFormError"> Create Project </Button>
                 </div>
-            </form>
-
-            <div>Project's Tasks</div>
-
-            <div class="mb-8 flex justify-between">
-                <div class="flex gap-4">
-                    <!-- Status Filter -->
-                    <div class="w-48">
-                        <Label for="status">Filter by status</Label>
-                        <!-- <Select v-model="status">
-                            <SelectTrigger>
-                                <SelectValue placeholder="Filter by status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem v-for="option in statusOptions" :key="option.value" :value="option.value">
-                                    {{ option.label }}
-                                </SelectItem>
-                            </SelectContent>
-                        </Select> -->
-                    </div>
-
-                    <!-- Due Date Filter -->
-                    <div class="w-48">
-                        <Label for="dueDate">Filter by Due Date</Label>
-                        <Input id="dueDate" v-model="dueDate" type="date" class="w-full" />
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-y-8">
-                <ProjectCard />
-                <ProjectCard />
-                <ProjectCard />
             </div>
         </div>
     </AppLayout>
 </template>
-
-<style scoped>
-table {
-    width: 100%;
-}
-</style>

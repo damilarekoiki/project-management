@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import InputError from '@/components/InputError.vue';
 import Task from '@/components/Task.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +9,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem, type TaskType } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -37,7 +38,6 @@ const tasks = ref<TaskType[]>([
     },
 ]);
 
-// Form with tasks array
 const form = ref<{
     title: string;
     description: string;
@@ -50,13 +50,15 @@ const form = ref<{
     tasks: [],
 });
 
-const taskError = ref<boolean>(false);
+const hasTaskError = ref<boolean>(false);
+
+const titleError = ref<string>('');
 
 const checkTaskError = () => {
     const error = form.value.tasks.some((task: TaskType): boolean => {
         return task.title == '';
     });
-    taskError.value = error;
+    hasTaskError.value = error;
 };
 
 // Add a new task to the DOM
@@ -82,10 +84,8 @@ const addTaskToForm = (task: TaskType, taskId: number) => {
     checkTaskError();
 };
 
-// Remove a task from the form
+// Remove a task from the form and DOM
 const removeTask = (taskId: number): void => {
-    // let taskIndex = form.value.tasks.findIndex((task: TaskType) => task.id == taskId);
-    // form.value.tasks.splice(taskIndex, 1);
     form.value.tasks = form.value.tasks.filter((task: TaskType) => {
         return task.id !== taskId;
     });
@@ -95,8 +95,8 @@ const removeTask = (taskId: number): void => {
     checkTaskError();
 };
 
-const formError = computed((): boolean => {
-    return taskError.value || form.value.title == '';
+const hasFormError = computed((): boolean => {
+    return hasTaskError.value || form.value.title == '';
 });
 
 const submit = async () => {
@@ -105,29 +105,16 @@ const submit = async () => {
     } catch (error) {
         console.error(error);
     }
-
-    // if(formError) {
-    //     return
-    // }
-
-    // Remove assignee_search field from each task before submission
-    // as it's only used for the UI and not needed in the backend
-
-    // Create a clean version of the form data for submission
-    // const cleanForm = useForm({
-    //     title: form.title,
-    //     description: form.description,
-    //     deadline: form.deadline,
-    //     tasks: form.tasks.map((task: Task) => ({
-    //         title: task.title,
-    //         assignee_id: task.assignee_id,
-    //         status: task.status,
-    //         due_date: task.due_date
-    //     }))
-    // });
-
-    // cleanForm.post(route('projects.store'));
 };
+
+watch(
+    () => form.value.title,
+    () => {
+        if (form.value.title == '') {
+            titleError.value = 'The title field is required';
+        }
+    },
+);
 </script>
 
 <template>
@@ -141,6 +128,7 @@ const submit = async () => {
                 <div class="space-y-2">
                     <Label for="title">Project Title</Label>
                     <Input id="title" v-model="form.title" placeholder="Enter title for the project" />
+                    <InputError :message="titleError" v-if="titleError" />
                 </div>
 
                 <div class="space-y-2">
@@ -167,10 +155,10 @@ const submit = async () => {
                         <Task :initialTask="task" :showRemoveButton="true" :isEdit="false" @removeTask="removeTask" @addTaskToForm="addTaskToForm" />
                     </div>
                 </div>
-                {{ form.tasks }}
+
                 <div class="flex justify-end gap-x-2">
                     <Button type="button" variant="outline" :href="route('projects')"> Cancel </Button>
-                    <Button type="submit" @click="submit" :disabled="formError"> Create Project </Button>
+                    <Button type="submit" @click="submit" :disabled="hasFormError"> Create Project </Button>
                 </div>
             </div>
         </div>

@@ -31,6 +31,7 @@ class ProjectRepository
             ->orWhereHas('tasks', function ($query) use ($user_id) {
                 $query->where('assignee_id', $user_id);
             })
+            ->orderByDesc('updated_at')
             ->paginate($this->perPage);
     }
 
@@ -53,6 +54,7 @@ class ProjectRepository
     public function getCreatedProjects(int $user_id): LengthAwarePaginator
     {
         return Project::where('creator_id', $user_id)
+            ->orderByDesc('updated_at')
             ->paginate($this->perPage);
     }
 
@@ -66,6 +68,7 @@ class ProjectRepository
             ->whereHas('tasks', function ($query) use ($user_id) {
                 $query->where('assignee_id', $user_id);
             })
+            ->orderByDesc('updated_at')
             ->paginate($this->perPage);
     }
 }
