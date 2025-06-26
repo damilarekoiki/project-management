@@ -42,10 +42,12 @@ const tasks = ref<TaskType[]>(projectTasks);
 
 console.log('protasks', projectTasks);
 
+const cursor = ref(projectTasksProp.next_cursor);
+
 const tasksUrl = ref<string>(
     route('api.projects.tasks.show', {
         project: project.id,
-        cursor: projectTasksProp.next_cursor,
+        cursor: cursor.value,
     }),
 );
 
@@ -130,7 +132,7 @@ watch(
 );
 
 const loadMoreTasks = async () => {
-    if (!tasksUrl.value) return;
+    if (!cursor.value) return;
 
     loadingMore.value = true;
     console.log('next url', tasksUrl.value);
@@ -139,6 +141,7 @@ const loadMoreTasks = async () => {
         const { data } = await axios.get(tasksUrl.value);
         tasks.value = tasks.value.concat(data.data);
         tasksUrl.value = data.next_page_url;
+        cursor.value = data.next_cursor;
     } finally {
         loadingMore.value = false;
     }
