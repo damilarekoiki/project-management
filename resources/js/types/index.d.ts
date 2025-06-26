@@ -44,4 +44,19 @@ export type Project = {
     tasks_count: number;
 };
 
+type Assignee = {
+    id: number;
+    name: string;
+};
+
+type TaskType = {
+    id: number;
+    project_id?: number;
+    title: string;
+    assignee_id: number | null;
+    status: string;
+    due_date: string;
+    completed_at?: string;
+};
+
 export type BreadcrumbItemType = BreadcrumbItem;

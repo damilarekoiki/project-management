@@ -27,23 +27,17 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function show(): InertiaResponse
-    {
-        //
-        return Inertia::render('Project');
-    }
-
     /**
      * Display the specified resource.
      */
-    // public function show(Project $project, TaskRepository $taskRepository)
-    // {
-    //     //
-    //     return Inertia::render('Project', [
-    //         'project' => $project,
-    //         'projectTasks' => $taskRepository->getProjectTasks($project->id, auth_user()->id)
-    //     ]);
-    // }
+    public function show(Project $project, TaskRepository $taskRepository): InertiaResponse
+    {
+        //
+        return Inertia::render('Project', [
+            'project' => $project,
+            'projectTasks' => $taskRepository->getProjectTasks($project->id, auth_user()->id),
+        ]);
+    }
 
     public function create(Request $request): InertiaResponse
     {

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\TaskStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ProjectStoreRequest extends FormRequest
 {
@@ -22,14 +24,16 @@ class ProjectStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
+            'title' => 'required|string|unique:tasks|max:255',
             'description' => 'nullable|string',
-            'deadline' => 'required|date',
+            'deadline' => ['nullable', Rule::date()->todayOrAfter()],
             'tasks' => 'array',
-            'tasks.*.assignee_id' => 'required|integer|exists:users,id',
-            'tasks.*.title' => 'required|string',
-            'tasks.*.status' => 'required|string|in:pending,in_progress,completed',
-            'tasks.*.due_date' => 'nullable|date',
+            'tasks.*.assignee_id' => 'nullable|integer|exists:users,id',
+            'tasks.*.title' => ['nullable', 'string', 'max:255',
+                // Rule::unique('tasks')->where(fn (Builder $query) => $query->where('project_id', request()->route('project')))
+            ],
+            'tasks.*.status' => ['nullable', 'string', Rule::enum(TaskStatus::class)],
+            'tasks.*.due_date' => ['nullable', Rule::date()->todayOrAfter()],
         ];
     }
 }
