@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import PlaceholderPattern from '../components/PlaceholderPattern.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -10,6 +10,11 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/dashboard',
     },
 ];
+
+const page = usePage();
+
+const totalProject: number = page.props.total_projects as number;
+const totalTasksCompletedToday: number = page.props.total_tasks_completed_today as number;
 </script>
 
 <template>
@@ -20,11 +25,11 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="grid auto-rows-min gap-4 md:grid-cols-3">
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 text-center dark:border-sidebar-border">
                     <p>Total Projects</p>
-                    <p>200</p>
+                    <p>{{ totalProject }}</p>
                 </div>
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 text-center dark:border-sidebar-border">
                     <p>Tasks Completed Today</p>
-                    <p>57</p>
+                    <p>{{ totalTasksCompletedToday }}</p>
                 </div>
                 <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                     <PlaceholderPattern />

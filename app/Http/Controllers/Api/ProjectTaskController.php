@@ -11,6 +11,7 @@ use App\Models\Task;
 use App\Repositories\TaskRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProjectTaskController extends Controller
 {
@@ -58,6 +59,8 @@ class ProjectTaskController extends Controller
          */
         $tasks = $storeRequest->safe()->array('tasks');
         $this->taskRepository->updateProjectTasks($project, $tasks);
+
+        Cache::forget('total-tasks-completed-today');
 
         return response()->json([], 200);
 

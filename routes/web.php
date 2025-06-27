@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\ProjectController as ProjectWebController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -10,9 +11,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
-    Route::get('dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::prefix('/projects')->group(function () {
         Route::get('/', [ProjectWebController::class, 'index'])->name('projects');

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Api\ProjectController as ProjectApiController;
 use App\Http\Controllers\Api\ProjectTaskController;
-use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\SearchUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -11,7 +11,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return $request->user();
     });
 
-    Route::get('/users/search', [UserController::class, 'search'])->name('api.users.search');
+    Route::get('/users/search', SearchUserController::class)->name('api.users.search');
 
     Route::prefix('/projects')->group(function () {
         Route::post('/', [ProjectApiController::class, 'store'])->name('api.projects.store');

@@ -7,13 +7,14 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+class SearchUserController extends Controller
 {
     /**
-     * Search for users by name
+     * Handle the incoming request.
      */
-    public function search(Request $request): JsonResponse
+    public function __invoke(Request $request): JsonResponse
     {
+        //
         $query = $request->string('query');
 
         if (blank($query)) {
