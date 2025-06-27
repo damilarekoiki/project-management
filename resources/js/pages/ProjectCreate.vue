@@ -119,7 +119,10 @@ const hasFormError = computed((): boolean => {
 const submit = async () => {
     try {
         await axios.post(route('api.projects.store'), form.value);
-        router.visit(route('projects'));
+        alert('Project successfully saved');
+        setTimeout(() => {
+            router.visit(route('projects'));
+        }, 200);
     } catch (error) {
         console.error(error);
     }

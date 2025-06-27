@@ -132,12 +132,7 @@ watch(
                         <TooltipProvider :delay-duration="0" v-if="!showTasksCreateForm">
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <Button
-                                        size="sm"
-                                        class="cursor-pointer bg-blue-800 text-white hover:bg-blue-700"
-                                        @click="showTasksCreateForm = true"
-                                        v-if="!showTasksCreateForm"
-                                    >
+                                    <Button size="sm" class="cursor-pointer" @click="showTasksCreateForm = true" v-if="!showTasksCreateForm">
                                         Add New Tasks
                                     </Button>
                                 </TooltipTrigger>
