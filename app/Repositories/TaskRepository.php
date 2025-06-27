@@ -78,7 +78,7 @@ class TaskRepository
     {
         /** @var array<int, array<string, mixed>> $data */
         $data = collect($tasks)->map(function ($task) {
-            if ($task['status'] === TaskStatus::Done->value) {
+            if ($task['status'] === TaskStatus::DONE->value) {
                 $task['completed_at'] = now();
             }
 

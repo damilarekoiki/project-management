@@ -22,7 +22,7 @@ class TaskFactory extends Factory
         $status = fake()->randomElement(TaskStatus::cases());
         $completedAt = null;
 
-        if ($status === TaskStatus::Done) {
+        if ($status === TaskStatus::DONE) {
             $completedAt = fake()->dateTimeBetween('-1 month', 'now');
         }
 

@@ -17,7 +17,7 @@ return new class extends Migration
                 table: 'users',
                 column: 'id',
             );
-            $table->string('title');
+            $table->string('title')->unique();
             $table->text('description')->nullable();
             $table->timestamp('deadline')->nullable();
             $table->timestamps();
