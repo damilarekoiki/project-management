@@ -3,13 +3,16 @@
 namespace App\Models;
 
 use App\Observers\ProjectObserver;
+use App\Policies\ProjectPolicy;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[ObservedBy([ProjectObserver::class])]
+#[UsePolicy(ProjectPolicy::class)]
 class Project extends Model
 {
     /** @use HasFactory<\Database\Factories\ProjectFactory> */

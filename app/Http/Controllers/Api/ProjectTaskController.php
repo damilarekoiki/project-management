@@ -8,10 +8,12 @@ use App\Http\Requests\ProjectTaskStoreRequest;
 use App\Http\Requests\ProjectTaskUpdateRequest;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\User;
 use App\Repositories\TaskRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectTaskController extends Controller
 {
@@ -19,6 +21,8 @@ class ProjectTaskController extends Controller
 
     public function index(Request $request, Project $project): JsonResponse
     {
+        Gate::authorize('view', $project);
+
         // Create filter DTO from request parameters
         $filters = new TaskFilterDto(
             status: $request->string('status'),
@@ -32,15 +36,18 @@ class ProjectTaskController extends Controller
 
     public function store(Project $project, ProjectTaskStoreRequest $storeRequest): JsonResponse
     {
+        Gate::authorize('update', $project);
         /**
          * @var array<int, array{
-         * assignee_id: int,
-         * title: string,
-         * status: string|null,
-         * due_date: string|null
+         * id?: int|null,
+         * assignee_id?: int|null,
+         * title?: string,
+         * status?: string,
+         * due_date?: string|null
          * }> $tasks
          */
         $tasks = $storeRequest->safe()->array('tasks');
+        $tasks = $this->taskRepository->prepareTasksForPersistence($tasks, auth_user());
         $this->taskRepository->createProjectTasks($project, $tasks);
 
         return response()->json([], 200);
@@ -50,14 +57,17 @@ class ProjectTaskController extends Controller
     {
         /**
          * @var array<int, array{
-         * id: int,
-         * assignee_id: int,
-         * title: string,
-         * status: string|null,
-         * due_date: string|null
+         * id?: int|null,
+         * assignee_id?: int|null,
+         * title?: string,
+         * status?: string,
+         * due_date?: string|null
          * }> $tasks
          */
         $tasks = $storeRequest->safe()->array('tasks');
+        $tasks = $this->taskRepository->prepareTasksForPersistence($tasks, auth_user());
+        $taskIds = $this->taskRepository->getPersistingIds();
+        Gate::allowIf(fn (User $user) => $this->taskRepository->canConfirmUserOwnership($taskIds, $user));
         $this->taskRepository->updateProjectTasks($project, $tasks);
 
         Cache::forget('total-tasks-completed-today');
@@ -68,10 +78,10 @@ class ProjectTaskController extends Controller
 
     public function destroy(Project $project, Task $task): JsonResponse
     {
+        Gate::authorize('delete', $task);
+
         $this->taskRepository->deleteTask($task);
 
         return response()->json(compact('task', 'project'), 200);
     }
-
-    // Todo: update task, create new tasks
 }

@@ -14,7 +14,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
 
         /** @var array<string, mixed> $userData */
         $userData = User::factory()->raw([
@@ -27,6 +26,8 @@ class DatabaseSeeder extends Seeder
             ['email' => $userData['email']],
             $userData
         );
+
+        User::factory(10)->create();
 
         // Run additional seeders
         $this->call([

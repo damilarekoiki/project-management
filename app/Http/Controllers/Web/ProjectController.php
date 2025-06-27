@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Repositories\ProjectRepository;
 use App\Repositories\TaskRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
@@ -32,7 +33,8 @@ class ProjectController extends Controller
      */
     public function show(Project $project, TaskRepository $taskRepository): InertiaResponse
     {
-        //
+        Gate::authorize('view', $project);
+
         return Inertia::render('Project', [
             'project' => $project,
             'projectTasks' => $taskRepository->getProjectTasks($project, auth_user()->id),
@@ -41,7 +43,8 @@ class ProjectController extends Controller
 
     public function create(Request $request): InertiaResponse
     {
-        //
+        Gate::authorize('create', Project::class);
+
         return Inertia::render('ProjectCreate');
     }
 }

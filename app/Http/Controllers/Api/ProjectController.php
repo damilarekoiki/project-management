@@ -10,6 +10,7 @@ use App\Repositories\ProjectRepository;
 use App\Repositories\TaskRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectController extends Controller
 {
@@ -23,7 +24,6 @@ class ProjectController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        //
         $projects = $this->projectRepository->getUserProjects(auth_user()->id);
 
         return response()->json($projects, 200);
@@ -34,7 +34,7 @@ class ProjectController extends Controller
      */
     public function store(ProjectStoreRequest $request): JsonResponse
     {
-        //
+        Gate::authorize('create', Project::class);
 
         $projectData = new ProjectDto(
             creator_id: auth_user()->id,
@@ -62,6 +62,8 @@ class ProjectController extends Controller
 
     public function update(Project $project, ProjectStoreRequest $request): JsonResponse
     {
+        Gate::authorize('update', $project);
+
         $projectData = new ProjectDto(
             creator_id: auth_user()->id,
             title: $request->safe()->string('title'),
@@ -80,7 +82,8 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project): JsonResponse
     {
-        //
+        Gate::authorize('delete', $project);
+
         $this->projectRepository->deleteProject($project);
 
         return response()->json($project, 200);

@@ -6,11 +6,15 @@ use App\DTOs\TaskFilterDto;
 use App\Enums\TaskStatus;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Pagination\CursorPaginator;
 
 class TaskRepository
 {
     private int $perPage = 20;
+
+    /** @var array<int, int> */
+    private $persistingIds = [];
 
     /**
      * @return CursorPaginator<int, Task>
@@ -35,51 +39,53 @@ class TaskRepository
     }
 
     /**
-     * @param array<int, array{
-     * assignee_id: int,
-     * title: string,
-     * status: string|null,
-     * due_date: string|null
-     * }> $tasks
+     * @param  array<int, array<string, mixed>>  $tasks
      */
     public function createProjectTasks(Project $project, $tasks): void
     {
-        $project->tasks()->createMany($this->prepareTasksForPersistence($tasks));
+        $project->tasks()->createMany($tasks);
     }
 
     /**
-     * @param array<int, array{
-     * id: int,
-     * assignee_id: int,
-     * title: string,
-     * status: string|null,
-     * due_date: string|null
-     * }> $tasks
+     * @param  array<int, array<string, mixed>>  $tasks
      */
     public function updateProjectTasks(Project $project, $tasks): void
     {
         $project->tasks()->upsert(
-            $this->prepareTasksForPersistence($tasks),
+            $tasks,
             ['id']
         );
     }
 
     /**
      * @param array<int, array{
-     * id?: int,
-     * assignee_id: int,
-     * title: string,
-     * status: string|null,
-     * due_date: string|null
+     * id?: int|null,
+     * assignee_id?: int|null,
+     * title?: string,
+     * status?: string,
+     * due_date?: string|null
      * }> $tasks
      * @return array<int, array<string, mixed>>
      */
-    protected function prepareTasksForPersistence($tasks): array
+    public function prepareTasksForPersistence($tasks, User $user): array
     {
         /** @var array<int, array<string, mixed>> $data */
-        $data = collect($tasks)->map(function ($task) {
-            if ($task['status'] === TaskStatus::DONE->value) {
+        $data = collect($tasks)->map(function ($task) use ($user) {
+            if (isset($task['id'])) {
+                $this->persistingIds[] = $task['id'];
+            }
+            if (isset($task['status']) && $task['status'] === TaskStatus::DONE->value) {
                 $task['completed_at'] = now();
+            }
+
+            if (! $user->isAdmin()) {
+
+                $newTask = [
+                    ...isset($task['id']) ? ['id' => $task['id']] : [],
+                    ...isset($task['status']) ? ['status' => $task['status']] : [],
+                    ...isset($task['completed_at']) ? ['completed_at' => $task['completed_at']] : [],
+                ];
+                $task = $newTask;
             }
 
             return $task;
@@ -88,9 +94,26 @@ class TaskRepository
         return $data;
     }
 
+    /**
+     * @return array<int, int>
+     */
+    public function getPersistingIds(): array
+    {
+        return $this->persistingIds;
+    }
+
+    /**
+     * @param  array<int, int>  $taskIds
+     */
+    public function canConfirmUserOwnership($taskIds, User $user): bool
+    {
+        return Task::whereIn('id', $taskIds)
+            ->whereBelongsTo($user)
+            ->exists();
+    }
+
     public function deleteTask(Task $task): void
     {
-        $task
-            ->delete();
+        $task->delete();
     }
 }
