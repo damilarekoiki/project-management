@@ -124,7 +124,7 @@ watch(
 
                 <!-- Tasks Section -->
                 <div class="mt-32 flex items-center justify-between">
-                    <h2 class="text-lg font-medium">Project's Tasks</h2>
+                    <h2 class="text-lg font-medium">Project's Tasks Available To You</h2>
 
                     <template v-if="user.role == 'admin'">
                         <Button v-if="showTasksCreateForm" variant="ghost" @click="showTasksCreateForm = false"> Go Back </Button>

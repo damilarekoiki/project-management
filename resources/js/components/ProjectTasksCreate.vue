@@ -54,7 +54,7 @@ const updateFormState = (state: boolean, taskId: number) => {
 // Add a new task to the DOM
 const addTask = () => {
     tasks.value.push({
-        id: tasks.value[tasks.value.length - 1].id + 1,
+        id: (tasks.value[tasks.value.length - 1].id ?? 0) + 1,
         title: '',
         assignee_id: null,
         status: 'pending',

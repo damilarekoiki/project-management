@@ -47,7 +47,7 @@ class ProjectTaskController extends Controller
          * }> $tasks
          */
         $tasks = $storeRequest->safe()->array('tasks');
-        $tasks = $this->taskRepository->prepareTasksForPersistence($tasks, auth_user());
+        $tasks = $this->taskRepository->prepareTasksForPersistence($tasks);
 
         $this->taskRepository->createProjectTasks($project, $tasks);
 
@@ -66,13 +66,15 @@ class ProjectTaskController extends Controller
          * }> $tasks
          */
         $tasks = $storeRequest->safe()->array('tasks');
-        $tasks = $this->taskRepository->prepareTasksForPersistence($tasks, auth_user());
+        $tasks = $this->taskRepository->prepareTasksForPersistence($tasks);
 
         $taskIds = $this->taskRepository->getPersistingIds();
 
-        Gate::allowIf(fn (User $user) => $this->taskRepository->canConfirmUserOwnership($taskIds, $user));
+        Gate::allowIf(fn (User $user) => $this->taskRepository->canConfirmUserOwnership($taskIds, $user) || $user->isAdmin());
 
-        $this->taskRepository->updateProjectTasks($project, $tasks);
+        $update = auth_user()->isAdmin() ? null : ['status'];
+
+        $this->taskRepository->updateProjectTasks($project, $tasks, $update);
 
         Cache::forget('total-tasks-completed-today');
 

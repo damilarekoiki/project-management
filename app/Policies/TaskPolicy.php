@@ -45,7 +45,7 @@ class TaskPolicy
     public function delete(User $user, Task $task): bool
     {
         return $task->project()
-            ->whereBelongsTo($user)
+            ->whereBelongsTo($user, 'creator')
             ->exists() && $user->isAdmin();
     }
 

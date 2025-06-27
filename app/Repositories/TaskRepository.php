@@ -48,12 +48,14 @@ class TaskRepository
 
     /**
      * @param  array<int, array<string, mixed>>  $tasks
+     * @param  array<int, string>|null  $update
      */
-    public function updateProjectTasks(Project $project, $tasks): void
+    public function updateProjectTasks(Project $project, $tasks, $update = null): void
     {
         $project->tasks()->upsert(
             $tasks,
-            ['id']
+            ['id'],
+            $update
         );
     }
 
@@ -67,25 +69,15 @@ class TaskRepository
      * }> $tasks
      * @return array<int, array<string, mixed>>
      */
-    public function prepareTasksForPersistence($tasks, User $user): array
+    public function prepareTasksForPersistence($tasks): array
     {
         /** @var array<int, array<string, mixed>> $data */
-        $data = collect($tasks)->map(function ($task) use ($user) {
+        $data = collect($tasks)->map(function ($task) {
             if (isset($task['id'])) {
                 $this->persistingIds[] = $task['id'];
             }
             if (isset($task['status']) && $task['status'] === TaskStatus::DONE->value) {
                 $task['completed_at'] = now();
-            }
-
-            if (! $user->isAdmin()) {
-
-                $newTask = [
-                    ...isset($task['id']) ? ['id' => $task['id']] : [],
-                    ...isset($task['status']) ? ['status' => $task['status']] : [],
-                    ...isset($task['completed_at']) ? ['completed_at' => $task['completed_at']] : [],
-                ];
-                $task = $newTask;
             }
 
             return $task;
@@ -108,7 +100,7 @@ class TaskRepository
     public function canConfirmUserOwnership($taskIds, User $user): bool
     {
         return Task::whereIn('id', $taskIds)
-            ->whereBelongsTo($user)
+            ->whereBelongsTo($user, 'assignee')
             ->exists();
     }
 

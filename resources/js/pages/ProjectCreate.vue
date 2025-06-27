@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem, type TaskType } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, ref, watch } from 'vue';
 
@@ -42,7 +42,7 @@ type TaskFormState = {
     [taskId: string]: boolean;
 };
 const formState = ref<TaskFormState>({});
-const formChanged = ref<boolean>(false);
+const formChanged = ref<boolean>(true);
 
 const form = ref<{
     title: string;
@@ -81,7 +81,7 @@ const updateFormState = (state: boolean, taskId: number) => {
 // Add a new task to the DOM
 const addTask = () => {
     tasks.value.push({
-        id: tasks.value[tasks.value.length - 1].id + 1,
+        id: (tasks.value[tasks.value.length - 1]?.id ?? 0) + 1,
         title: '',
         assignee_id: null,
         status: 'pending',
@@ -119,6 +119,7 @@ const hasFormError = computed((): boolean => {
 const submit = async () => {
     try {
         await axios.post(route('api.projects.store'), form.value);
+        router.visit(route('projects'));
     } catch (error) {
         console.error(error);
     }
@@ -181,8 +182,10 @@ watch(
                 </div>
 
                 <div class="flex justify-end gap-x-2">
-                    <Button type="button" variant="outline" :href="route('projects')"> Cancel </Button>
-                    <Button type="submit" @click="submit" :disabled="hasFormError || !formChanged"> Create Project </Button>
+                    <Button variant="outline" as-child class="cursor-pointer">
+                        <Link as="Link" :href="route('projects')"> Cancel </Link>
+                    </Button>
+                    <Button @click="submit" :disabled="hasFormError || !formChanged"> Create Project </Button>
                 </div>
             </div>
         </div>
