@@ -11,13 +11,17 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Project } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { defineEmits, defineProps, ref } from 'vue';
 
 const props = defineProps<{
     project: Project;
 }>();
+
+const page = usePage();
+
+const user = page.props.auth.user;
 
 const emit = defineEmits(['deleteProject']);
 
@@ -51,11 +55,11 @@ const deleteProject = async () => {
                 <Link :href="route('projects.show', { project: project.id })"> View </Link>
             </Button>
 
-            <Button as-child class="cursor-pointer bg-blue-800 text-white hover:bg-blue-800">
+            <Button as-child class="cursor-pointer bg-blue-800 text-white hover:bg-blue-800" v-if="user.role == 'admin'">
                 <Link :href="route('projects.edit', { project: project.id })"> Edit </Link>
             </Button>
 
-            <Dialog>
+            <Dialog v-if="user.role == 'admin'">
                 <DialogTrigger as-child>
                     <Button variant="destructive" class="cursor-pointer">Delete</Button>
                 </DialogTrigger>

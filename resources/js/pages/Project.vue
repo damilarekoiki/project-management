@@ -17,6 +17,8 @@ const page = usePage();
 
 const project: Project = page.props.project as Project;
 
+const user = page.props.auth.user;
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -87,7 +89,7 @@ watch(
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-10 rounded-xl p-4">
-            <h1 class="text-2xl font-bold capitalize">Update Project</h1>
+            <h1 class="text-2xl font-bold capitalize">Project</h1>
 
             <div class="max-w-2xl space-y-6">
                 <div class="space-y-2">
@@ -110,6 +112,7 @@ watch(
 
                 <div>
                     <Button
+                        v-if="user.role == 'admin'"
                         type="submit"
                         @click="submit"
                         :disabled="form.title == ''"
@@ -123,25 +126,27 @@ watch(
                 <div class="mt-32 flex items-center justify-between">
                     <h2 class="text-lg font-medium">Project's Tasks</h2>
 
-                    <Button v-if="showTasksCreateForm" variant="ghost" @click="showTasksCreateForm = false"> Go Back </Button>
+                    <template v-if="user.role == 'admin'">
+                        <Button v-if="showTasksCreateForm" variant="ghost" @click="showTasksCreateForm = false"> Go Back </Button>
 
-                    <TooltipProvider :delay-duration="0" v-if="!showTasksCreateForm">
-                        <Tooltip>
-                            <TooltipTrigger>
-                                <Button
-                                    size="sm"
-                                    class="cursor-pointer bg-blue-800 text-white hover:bg-blue-700"
-                                    @click="showTasksCreateForm = true"
-                                    v-if="!showTasksCreateForm"
-                                >
-                                    Add New Tasks
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Add more tasks to the existing ones</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                        <TooltipProvider :delay-duration="0" v-if="!showTasksCreateForm">
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Button
+                                        size="sm"
+                                        class="cursor-pointer bg-blue-800 text-white hover:bg-blue-700"
+                                        @click="showTasksCreateForm = true"
+                                        v-if="!showTasksCreateForm"
+                                    >
+                                        Add New Tasks
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Add more tasks to the existing ones</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </template>
                 </div>
                 <ProjectTasksEdit v-if="!showTasksCreateForm" />
                 <ProjectTasksCreate v-if="showTasksCreateForm" />

@@ -21,6 +21,8 @@ const page = usePage();
 const projectsProp = page.props.projects as any;
 const projects: Project[] = projectsProp.data;
 
+const user = page.props.auth.user;
+
 const deleteProject = (project: Project) => {
     const index = projects.findIndex((p) => p.id === project.id);
     if (index !== -1) {
@@ -36,7 +38,7 @@ const deleteProject = (project: Project) => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-10 rounded-xl p-4">
-            <div class="mb-12 flex">
+            <div class="mb-12 flex" v-if="user.role == 'admin'">
                 <Button variant="outline" as-child class="cursor-pointer">
                     <Link as="Link" :href="route('projects.create')"> Create A New Project </Link>
                 </Button>

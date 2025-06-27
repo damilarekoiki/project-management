@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Assignee, TaskType } from '@/types';
+import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { defineEmits, defineProps, onMounted, ref, watch } from 'vue';
 import InputError from './InputError.vue';
@@ -12,6 +13,10 @@ const props = defineProps<{
     showRemoveButton: boolean;
     isEdit: boolean;
 }>();
+
+const page = usePage();
+
+const user = page.props.auth.user;
 
 const emit = defineEmits(['removeTask', 'addTaskToForm', 'updateFormState']);
 
@@ -154,13 +159,13 @@ onMounted(() => {
 
 <template>
     <div class="space-y-8 rounded-lg border p-4">
-        <div class="flex items-center justify-end">
+        <div class="flex items-center justify-end" v-if="user.role == 'admin'">
             <Button type="button" variant="destructive" size="sm" @click="removeTask(task.id)" v-if="showRemoveButton"> Remove </Button>
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-2" :class="{ 'opacity-35': user.role == 'non_admin' }">
             <Label :for="`${task.id}-title`">Title</Label>
-            <Input :id="`${task.id}-title`" v-model="task.title" placeholder="Enter a title for the task" />
+            <Input :id="`${task.id}-title`" v-model="task.title" placeholder="Enter a title for the task" :readonly="user.role == 'non_admin'" />
             <InputError :message="titleError" v-if="task.title == ''" />
         </div>
 
@@ -177,15 +182,28 @@ onMounted(() => {
             </select>
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-2" :class="{ 'opacity-40': user.role == 'non_admin' }">
             <Label :for="`${task.id}-due-date`">Due Date</Label>
-            <Input :id="`${task.id}-due-date`" v-model="task.due_date" type="date" :min="today" class="!bg-white text-black" />
+            <Input
+                :id="`${task.id}-due-date`"
+                v-model="task.due_date"
+                type="date"
+                :min="today"
+                class="!bg-white text-black"
+                :readonly="user.role == 'non_admin'"
+            />
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-2" :class="{ 'opacity-40': user.role == 'non_admin' }">
             <Label :for="`${task.id}-assignee`">Assignee</Label>
             <div class="relative">
-                <Input :id="`${task.id}-assignee`" v-model="assigneeSearch" placeholder="Search for user..." autocomplete="off" />
+                <Input
+                    :id="`${task.id}-assignee`"
+                    v-model="assigneeSearch"
+                    placeholder="Search for user..."
+                    autocomplete="off"
+                    :readonly="user.role == 'non_admin'"
+                />
 
                 <!-- Search Results -->
                 <div

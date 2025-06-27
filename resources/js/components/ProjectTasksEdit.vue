@@ -60,17 +60,6 @@ const checkTaskError = () => {
     hasTaskError.value = error;
 };
 
-// Add a new task to the DOM
-// const addTask = () => {
-//     tasks.value.push({
-//         id: tasks.value[tasks.value.length - 1].id + 1,
-//         title: '',
-//         assignee_id: null,
-//         status: 'pending',
-//         due_date: '',
-//     });
-//     checkTaskError();
-// };
 const updateFormState = (state: boolean, taskId: number) => {
     formState.value[taskId] = state;
     if (state == false) {
