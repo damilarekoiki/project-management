@@ -53,6 +53,7 @@ type TaskType = {
     id: number;
     project_id?: number;
     title: string;
+    assignee?: Assignee;
     assignee_id: number | null;
     status: string;
     due_date: string;

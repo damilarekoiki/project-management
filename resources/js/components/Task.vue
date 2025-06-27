@@ -28,6 +28,8 @@ const searchResult = ref<Assignee[]>([]);
 
 const assignee = ref<Assignee | null>();
 
+const isFirstAssigneeSearchReqest = ref<boolean>(true);
+
 const today = new Date().toISOString().split('T')[0];
 
 const task = ref<TaskType>({
@@ -63,7 +65,7 @@ const removeTask = async (taskId: number | undefined): Promise<void> => {
 };
 
 const searchUsers = async (query: string): Promise<void> => {
-    if (!query || query.length < 2) {
+    if (!query || query.length == 0) {
         searchResult.value = [];
         return;
     }
@@ -94,6 +96,10 @@ const removeAssignee = () => {
 };
 
 watch(assigneeSearch, (newValue: string | undefined) => {
+    if (isFirstAssigneeSearchReqest.value) {
+        isFirstAssigneeSearchReqest.value = false;
+        return;
+    }
     if (newValue !== undefined && assigneeSearch.value !== assignee.value?.name) {
         searchUsers(newValue);
     }
@@ -141,6 +147,8 @@ watch(
 
 onMounted(() => {
     task.value = JSON.parse(JSON.stringify(props.initialTask));
+    assigneeSearch.value = task.value.assignee?.name ?? '';
+    assignee.value = task.value.assignee;
 });
 </script>
 

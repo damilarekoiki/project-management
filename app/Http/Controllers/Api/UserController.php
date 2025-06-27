@@ -20,8 +20,8 @@ class UserController extends Controller
             return response()->json([], 200);
         }
 
-        $users = User::where('name', 'like', "%{$query}%")
-            ->select(['id', 'name'])
+        $users = User::select(['id', 'name'])
+            ->whereLike('name', "%{$query}%")
             ->limit(4)
             ->get();
 
