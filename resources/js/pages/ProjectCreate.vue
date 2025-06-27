@@ -38,6 +38,12 @@ const tasks = ref<TaskType[]>([
     },
 ]);
 
+type TaskFormState = {
+    [taskId: string]: boolean;
+};
+const formState = ref<TaskFormState>({});
+const formChanged = ref<boolean>(false);
+
 const form = ref<{
     title: string;
     description: string;
@@ -58,7 +64,18 @@ const checkTaskError = () => {
     const error = form.value.tasks.some((task: TaskType): boolean => {
         return task.title == '';
     });
+    formChanged.value = Object.values(formState.value).some((state) => state == true);
     hasTaskError.value = error;
+};
+
+const updateFormState = (state: boolean, taskId: number) => {
+    formState.value[taskId] = state;
+    if (state == false) {
+        form.value.tasks = form.value.tasks.filter((task: TaskType) => {
+            return task.id !== taskId;
+        });
+    }
+    checkTaskError();
 };
 
 // Add a new task to the DOM
@@ -152,13 +169,20 @@ watch(
                     </div>
 
                     <div v-for="task in tasks" :key="task.id" class="space-y-4 rounded-lg border p-4">
-                        <Task :initialTask="task" :showRemoveButton="true" :isEdit="false" @removeTask="removeTask" @addTaskToForm="addTaskToForm" />
+                        <Task
+                            :initialTask="task"
+                            :showRemoveButton="true"
+                            :isEdit="false"
+                            @removeTask="removeTask"
+                            @addTaskToForm="addTaskToForm"
+                            @updateFormState="updateFormState"
+                        />
                     </div>
                 </div>
 
                 <div class="flex justify-end gap-x-2">
                     <Button type="button" variant="outline" :href="route('projects')"> Cancel </Button>
-                    <Button type="submit" @click="submit" :disabled="hasFormError"> Create Project </Button>
+                    <Button type="submit" @click="submit" :disabled="hasFormError || !formChanged"> Create Project </Button>
                 </div>
             </div>
         </div>

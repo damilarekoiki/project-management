@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 import InputError from '@/components/InputError.vue';
+import ProjectTasksCreate from '@/components/ProjectTasksCreate.vue';
 import ProjectTasksEdit from '@/components/ProjectTasksEdit.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Project, type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/vue3';
@@ -32,6 +34,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const today = new Date().toISOString().split('T')[0];
 
+const showTasksCreateForm = ref<boolean>(false);
+
 const form = ref<{
     title: string;
     description?: string;
@@ -49,18 +53,6 @@ const initialErrors = {
 };
 
 const formErrors = ref(initialErrors);
-
-// Add a new task to the DOM
-// const addTask = () => {
-//     tasks.value.push({
-//         id: tasks.value[tasks.value.length - 1].id + 1,
-//         title: '',
-//         assignee_id: null,
-//         status: 'pending',
-//         due_date: '',
-//     });
-//     checkTaskError();
-// };
 
 const submit = async () => {
     try {
@@ -131,9 +123,28 @@ watch(
                 <div class="mt-32 flex items-center justify-between">
                     <h2 class="text-lg font-medium">Project's Tasks</h2>
 
-                    <Button type="button" size="sm" class="cursor-pointer bg-blue-800 text-white hover:bg-blue-700"> + Create New Tasks </Button>
+                    <Button v-if="showTasksCreateForm" variant="ghost" @click="showTasksCreateForm = false"> Go Back </Button>
+
+                    <TooltipProvider :delay-duration="0" v-if="!showTasksCreateForm">
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <Button
+                                    size="sm"
+                                    class="cursor-pointer bg-blue-800 text-white hover:bg-blue-700"
+                                    @click="showTasksCreateForm = true"
+                                    v-if="!showTasksCreateForm"
+                                >
+                                    Add New Tasks
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Add more tasks to the existing ones</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </div>
-                <ProjectTasksEdit />
+                <ProjectTasksEdit v-if="!showTasksCreateForm" />
+                <ProjectTasksCreate v-if="showTasksCreateForm" />
             </div>
         </div>
     </AppLayout>

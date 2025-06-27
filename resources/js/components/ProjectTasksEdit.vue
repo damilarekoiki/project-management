@@ -208,9 +208,7 @@ onUnmounted(() => {
         </div>
     </div>
 
-    {{ form }}
-
     <div class="flex justify-end gap-x-2" v-if="tasks.length">
-        <Button @click="updateTasks" :disabled="hasFormError || formChanged == false"> Update Tasks </Button>
+        <Button @click="updateTasks" :disabled="hasFormError || !formChanged"> Update Tasks </Button>
     </div>
 </template>
