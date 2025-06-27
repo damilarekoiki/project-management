@@ -39,14 +39,8 @@ const taskStatusOptions = [
 const loadingMore = ref<boolean>(false);
 
 const form = ref<{
-    title: string;
-    description?: string;
-    deadline?: string;
     tasks: TaskType[];
 }>({
-    title: project.title,
-    description: project.description,
-    deadline: project.deadline,
     tasks: [],
 });
 
@@ -77,9 +71,13 @@ const checkTaskError = () => {
 //     });
 //     checkTaskError();
 // };
-const updateFormState = (state: boolean, taskId: string) => {
+const updateFormState = (state: boolean, taskId: number) => {
     formState.value[taskId] = state;
-
+    if (state == false) {
+        form.value.tasks = form.value.tasks.filter((task: TaskType) => {
+            return task.id !== taskId;
+        });
+    }
     checkTaskError();
 };
 const addTaskToForm = (task: TaskType, taskId: number) => {
@@ -209,6 +207,8 @@ onUnmounted(() => {
             />
         </div>
     </div>
+
+    {{ form }}
 
     <div class="flex justify-end gap-x-2" v-if="tasks.length">
         <Button @click="updateTasks" :disabled="hasFormError || formChanged == false"> Update Tasks </Button>
