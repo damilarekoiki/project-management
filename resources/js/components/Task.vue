@@ -33,8 +33,6 @@ const searchResult = ref<Assignee[]>([]);
 
 const assignee = ref<Assignee | null>();
 
-const isFirstAssigneeSearchReqest = ref<boolean>(true);
-
 const today = new Date().toISOString().split('T')[0];
 
 const task = ref<TaskType>({
@@ -101,10 +99,6 @@ const removeAssignee = () => {
 };
 
 watch(assigneeSearch, (newValue: string | undefined) => {
-    if (isFirstAssigneeSearchReqest.value) {
-        isFirstAssigneeSearchReqest.value = false;
-        return;
-    }
     if (newValue !== undefined && assigneeSearch.value !== assignee.value?.name) {
         searchUsers(newValue);
     }
