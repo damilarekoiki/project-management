@@ -35,7 +35,7 @@ class ProjectController extends Controller
         //
         return Inertia::render('Project', [
             'project' => $project,
-            'projectTasks' => $taskRepository->getProjectTasks($project->id, auth_user()->id),
+            'projectTasks' => $taskRepository->getProjectTasks($project, auth_user()->id),
         ]);
     }
 

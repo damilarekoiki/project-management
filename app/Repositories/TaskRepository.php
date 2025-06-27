@@ -15,9 +15,9 @@ class TaskRepository
      * @return CursorPaginator<int, Task>
      *                                    Get tasks of a project associated with a user.
      */
-    public function getProjectTasks(int $project_id, int $user_id, ?TaskFilterDto $filters = null): CursorPaginator
+    public function getProjectTasks(Project $project, int $user_id, ?TaskFilterDto $filters = null): CursorPaginator
     {
-        return Task::where('project_id', $project_id)
+        return $project->tasks()
             ->where(function ($query) use ($user_id) {
                 $query->where('assignee_id', $user_id)
                     ->orWhereHas('project', function ($query) use ($user_id) {
@@ -43,5 +43,11 @@ class TaskRepository
     public function createProjectTasks(Project $project, $tasks): void
     {
         $project->tasks()->createMany($tasks);
+    }
+
+    public function deleteTask(Task $task): void
+    {
+        $task
+            ->delete();
     }
 }

@@ -41,9 +41,24 @@ const task = ref<TaskType>({
 const titleError = ref('');
 
 // Remove a task from the form
-const removeTask = (index: number | undefined): void => {
-    if (index !== undefined) {
-        emit('removeTask', index);
+const removeTask = async (taskId: number | undefined): Promise<void> => {
+    if (taskId !== undefined) {
+        if (props.isEdit) {
+            const confirmed = window.confirm('The task will be permantly deleted');
+            if (confirmed) {
+                try {
+                    await axios.delete(
+                        route('api.projects.tasks.delete', {
+                            project: route().params.project,
+                            task: taskId,
+                        }),
+                    );
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        }
+        emit('removeTask', taskId);
     }
 };
 

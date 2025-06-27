@@ -19,8 +19,6 @@ const projectTasks: TaskType[] = projectTasksProp.data;
 
 const isAtBottom = ref(false);
 
-console.log(projectTasksProp);
-
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -40,8 +38,6 @@ const today = new Date().toISOString().split('T')[0];
 
 const tasks = ref<TaskType[]>(projectTasks);
 
-console.log('protasks', projectTasks);
-
 const cursor = ref(projectTasksProp.next_cursor);
 
 const tasksUrl = ref<string>(
@@ -50,6 +46,15 @@ const tasksUrl = ref<string>(
         cursor: cursor.value,
     }),
 );
+
+const taskDateFilter = ref('');
+const taskStatusFilter = ref('');
+
+const taskStatusOptions = [
+    { value: 'pending', label: 'Pending' },
+    { value: 'in_progress', label: 'In Progress' },
+    { value: 'done', label: 'Done' },
+];
 
 const loadingMore = ref<boolean>(false);
 
@@ -122,29 +127,26 @@ const submit = async () => {
     }
 };
 
-watch(
-    () => form.value.title,
-    () => {
-        if (form.value.title == '') {
-            titleError.value = 'The title field is required';
-        }
-    },
-);
-
-const loadMoreTasks = async () => {
-    if (!cursor.value) return;
-
+const fetchTasks = async (mode: 'filter' | 'scroll') => {
     loadingMore.value = true;
-    console.log('next url', tasksUrl.value);
 
     try {
         const { data } = await axios.get(tasksUrl.value);
+        if (mode == 'filter') {
+            tasks.value = [];
+        }
         tasks.value = tasks.value.concat(data.data);
         tasksUrl.value = data.next_page_url;
         cursor.value = data.next_cursor;
     } finally {
         loadingMore.value = false;
     }
+};
+
+const loadMoreTasks = () => {
+    if (!cursor.value) return;
+
+    fetchTasks('scroll');
 };
 
 const handleScroll = () => {
@@ -156,7 +158,6 @@ const handleScroll = () => {
 
     if (hasReachedBottom && !isAtBottom.value) {
         isAtBottom.value = true;
-        console.log('✅ Scrolled to bottom');
         loadMoreTasks();
     }
 
@@ -165,6 +166,24 @@ const handleScroll = () => {
         isAtBottom.value = false;
     }
 };
+
+watch(
+    () => form.value.title,
+    () => {
+        if (form.value.title == '') {
+            titleError.value = 'The title field is required';
+        }
+    },
+);
+
+watch([taskStatusFilter, taskDateFilter], () => {
+    tasksUrl.value = route('api.projects.tasks.show', {
+        project: project.id,
+        status: taskStatusFilter.value,
+        due_date: taskDateFilter.value,
+    });
+    fetchTasks('filter');
+});
 
 onMounted(() => {
     window.addEventListener('scroll', handleScroll);
@@ -196,27 +215,40 @@ onUnmounted(() => {
 
                 <div class="space-y-2">
                     <Label for="deadline">Deadline</Label>
-                    <!-- <div class="bg-white"> -->
                     <Input id="deadline" v-model="form.deadline" type="date" :min="today" class="!bg-white text-black" />
-
-                    <!-- </div> -->
                 </div>
 
                 <!-- Tasks Section -->
                 <div class="mt-16 space-y-4">
                     <div class="flex items-center justify-between">
                         <h2 class="text-lg font-medium">Tasks</h2>
-                        <Button type="button" size="sm" class="bg-blue-800 text-white hover:bg-blue-800" @click="addTask"> Add Task </Button>
+                        <div>
+                            <Label for="dueDate">Filter by Status</Label>
+                            <select
+                                v-model="taskStatusFilter"
+                                class="mt-2 flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+                            >
+                                <option v-for="option in taskStatusOptions" :key="option.value" :value="option.value">
+                                    {{ option.label }}
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <Label for="dueDate">Filter by Due Date</Label>
+                            <Input id="dueDate" v-model="taskDateFilter" type="date" class="w-full !bg-white text-gray-900" />
+                        </div>
+                        <Button type="button" size="sm" class="bg-blue-800 text-white hover:bg-blue-800" @click="addTask"> Add New Tasks </Button>
                     </div>
 
+                    <div v-if="tasks.length == 0" class="mt-10 text-center">No tasks found</div>
+
                     <div v-for="task in tasks" :key="task.id" class="space-y-4 rounded-lg border p-4">
-                        <Task :initialTask="task" :showRemoveButton="true" :isEdit="false" @removeTask="removeTask" @addTaskToForm="addTaskToForm" />
+                        <Task :initialTask="task" :showRemoveButton="true" :isEdit="true" @removeTask="removeTask" @addTaskToForm="addTaskToForm" />
                     </div>
                 </div>
 
-                <div class="flex justify-end gap-x-2">
-                    <Button type="button" variant="outline" :href="route('projects')"> Cancel </Button>
-                    <Button type="submit" @click="submit" :disabled="hasFormError"> Create Project </Button>
+                <div class="flex justify-end gap-x-2" v-if="tasks.length">
+                    <Button type="submit" @click="submit" :disabled="hasFormError"> Save Changes </Button>
                 </div>
             </div>
         </div>

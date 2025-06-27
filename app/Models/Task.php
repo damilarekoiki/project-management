@@ -26,6 +26,7 @@ class Task extends Model
 
     protected $casts = [
         'status' => TaskStatus::class,
+        'due_date' => 'datetime:Y-m-d',
     ];
 
     /**
@@ -56,7 +57,7 @@ class Task extends Model
             $query->where('status', $filters?->status);
         })
             ->when(filled($filters?->due_date), function () use ($query, $filters) {
-                $query->where('deadline', '<=', $filters?->due_date);
+                $query->whereDate('due_date', $filters?->due_date);
             });
     }
 }

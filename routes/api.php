@@ -20,11 +20,21 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             Route::delete('/', [ProjectApiController::class, 'destroy'])
                 ->name('api.projects.delete');
+        });
 
-            Route::prefix('/tasks')->group(function () {
+    });
 
-                Route::get('/', [ProjectTaskController::class, 'index'])
-                    ->name('api.projects.tasks.show');
+    Route::scopeBindings()->group(function () {
+
+        Route::prefix('/projects/{project}/tasks')->group(function () {
+
+            Route::get('/', [ProjectTaskController::class, 'index'])
+                ->name('api.projects.tasks.show');
+
+            Route::prefix('/{task}')->group(function () {
+
+                Route::delete('/', [ProjectTaskController::class, 'destroy'])
+                    ->name('api.projects.tasks.delete');
 
             });
         });

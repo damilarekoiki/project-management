@@ -47,6 +47,12 @@ class ProjectRepository
         return $project;
     }
 
+    public function deleteProject(Project $project): void
+    {
+        $project
+            ->delete();
+    }
+
     /**
      * @return LengthAwarePaginator<int, Project>
      *                                            Get projects created by a user.

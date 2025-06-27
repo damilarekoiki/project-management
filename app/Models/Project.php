@@ -19,6 +19,10 @@ class Project extends Model
         'deadline',
     ];
 
+    protected $casts = [
+        'deadline' => 'datetime:Y-m-d',
+    ];
+
     /**
      * @return HasMany<Task, $this>
      */
