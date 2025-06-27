@@ -122,6 +122,7 @@ const addNewTasks = async () => {
     </div>
 
     <div class="flex justify-end gap-x-2" v-if="tasks.length">
+        <span class="mt-3 mr-12 inline-block text-sm text-muted-foreground" v-if="hasFormError || !formChanged">Edit a task to continue</span>
         <Button @click="addNewTasks" :disabled="hasFormError || !formChanged"> Create Tasks </Button>
     </div>
 </template>

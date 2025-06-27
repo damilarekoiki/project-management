@@ -159,14 +159,11 @@ watch(
 
                 <div class="space-y-2">
                     <Label for="deadline">Deadline</Label>
-                    <!-- <div class="bg-white"> -->
                     <Input id="deadline" v-model="form.deadline" type="date" :min="today" class="!bg-white text-black" />
-
-                    <!-- </div> -->
                 </div>
 
                 <!-- Tasks Section -->
-                <div class="mt-16 space-y-4">
+                <div class="mt-32 space-y-8">
                     <div class="flex items-center justify-between">
                         <h2 class="text-lg font-medium">Project's Tasks</h2>
                         <Button type="button" size="sm" class="bg-blue-800 text-white hover:bg-blue-800" @click="addTask"> Add Task </Button>
@@ -185,6 +182,10 @@ watch(
                 </div>
 
                 <div class="flex justify-end gap-x-2">
+                    <span class="mt-3 mr-12 inline-block text-sm text-muted-foreground" v-if="hasFormError || !formChanged"
+                        >Edit project to continue</span
+                    >
+
                     <Button variant="outline" as-child class="cursor-pointer">
                         <Link as="Link" :href="route('projects')"> Cancel </Link>
                     </Button>
