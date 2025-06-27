@@ -6,7 +6,7 @@ use App\Enums\TaskStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ProjectStoreRequest extends FormRequest
+class ProjectTaskStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,7 @@ class ProjectStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|unique:projects|max:255',
-            'description' => 'nullable|string',
-            'deadline' => ['nullable', Rule::date()->todayOrAfter()],
+            //
             'tasks' => 'array',
             'tasks.*.assignee_id' => 'nullable|integer|exists:users,id',
             'tasks.*.title' => ['nullable', 'string', 'max:255'],

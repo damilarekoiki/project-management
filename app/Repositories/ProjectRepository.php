@@ -47,6 +47,17 @@ class ProjectRepository
         return $project;
     }
 
+    public function updateProject(Project $project, ProjectDto $projectData): Project
+    {
+        $project = tap($project)->update([
+            'deadline' => $projectData->deadline,
+            'description' => $projectData->description,
+            'title' => $projectData->title,
+        ]);
+
+        return $project;
+    }
+
     public function deleteProject(Project $project): void
     {
         $project

@@ -13,7 +13,7 @@ const props = defineProps<{
     isEdit: boolean;
 }>();
 
-const emit = defineEmits(['removeTask', 'addTaskToForm']);
+const emit = defineEmits(['removeTask', 'addTaskToForm', 'updateFormState']);
 
 // Task status options
 const taskStatusOptions = [
@@ -100,10 +100,12 @@ watch(assigneeSearch, (newValue: string | undefined) => {
 });
 
 const checkTaskValue = (newValue: any, oldValue: any) => {
-    if (props.isEdit && newValue == oldValue) {
+    if (newValue == oldValue) {
+        emit('updateFormState', false, task.value.id);
         return;
     }
     emit('addTaskToForm', task.value, task.value.id);
+    emit('updateFormState', true, task.value.id);
 };
 
 watch(

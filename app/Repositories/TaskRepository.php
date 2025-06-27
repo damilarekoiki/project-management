@@ -45,6 +45,20 @@ class TaskRepository
         $project->tasks()->createMany($tasks);
     }
 
+    /**
+     * @param array<int, array{
+     * id: int,
+     * assignee_id: int,
+     * title: string,
+     * status: string|null,
+     * due_date: string|null
+     * }> $tasks
+     */
+    public function updateProjectTasks(Project $project, $tasks): void
+    {
+        $project->tasks()->upsert($tasks, ['id']);
+    }
+
     public function deleteTask(Task $task): void
     {
         $task

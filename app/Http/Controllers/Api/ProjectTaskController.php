@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\DTOs\TaskFilterDto;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProjectTaskStoreRequest;
+use App\Http\Requests\ProjectTaskUpdateRequest;
 use App\Models\Project;
 use App\Models\Task;
 use App\Repositories\TaskRepository;
@@ -27,6 +29,40 @@ class ProjectTaskController extends Controller
         return response()->json($tasks, 200);
     }
 
+    public function store(Project $project, ProjectTaskStoreRequest $storeRequest): JsonResponse
+    {
+        /**
+         * @var array<int, array{
+         * assignee_id: int,
+         * title: string,
+         * status: string|null,
+         * due_date: string|null
+         * }> $tasks
+         */
+        $tasks = $storeRequest->safe()->array('tasks');
+        $this->taskRepository->createProjectTasks($project, $tasks);
+
+        return response()->json([], 200);
+    }
+
+    public function update(Project $project, ProjectTaskUpdateRequest $storeRequest): JsonResponse
+    {
+        /**
+         * @var array<int, array{
+         * id: int,
+         * assignee_id: int,
+         * title: string,
+         * status: string|null,
+         * due_date: string|null
+         * }> $tasks
+         */
+        $tasks = $storeRequest->safe()->array('tasks');
+        $this->taskRepository->updateProjectTasks($project, $tasks);
+
+        return response()->json([], 200);
+
+    }
+
     public function destroy(Project $project, Task $task): JsonResponse
     {
         $this->taskRepository->deleteTask($task);
@@ -34,5 +70,5 @@ class ProjectTaskController extends Controller
         return response()->json(compact('task', 'project'), 200);
     }
 
-    // Todo: update task, delete task, create, new tasks
+    // Todo: update task, create new tasks
 }

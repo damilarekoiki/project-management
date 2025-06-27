@@ -35,7 +35,7 @@ const deleteProject = (project: Project) => {
     <Head title="Projects" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+        <div class="flex h-full flex-1 flex-col gap-10 rounded-xl p-4">
             <div class="mb-12 flex">
                 <Button variant="outline" as-child class="cursor-pointer">
                     <Link as="Link" :href="route('projects.create')"> Create A New Project </Link>

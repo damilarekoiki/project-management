@@ -147,7 +147,7 @@ watch(
                 <!-- Tasks Section -->
                 <div class="mt-16 space-y-4">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-lg font-medium">Tasks</h2>
+                        <h2 class="text-lg font-medium">Project's Tasks</h2>
                         <Button type="button" size="sm" class="bg-blue-800 text-white hover:bg-blue-800" @click="addTask"> Add Task </Button>
                     </div>
 

@@ -20,6 +20,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             Route::delete('/', [ProjectApiController::class, 'destroy'])
                 ->name('api.projects.delete');
+
+            Route::patch('/', [ProjectApiController::class, 'update'])
+                ->name('api.projects.update');
         });
 
     });
@@ -30,6 +33,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
             Route::get('/', [ProjectTaskController::class, 'index'])
                 ->name('api.projects.tasks.show');
+
+            Route::patch('/', [ProjectTaskController::class, 'update'])
+                ->name('api.projects.tasks.update');
+
+            Route::put('/', [ProjectTaskController::class, 'store'])
+                ->name('api.projects.tasks.store');
 
             Route::prefix('/{task}')->group(function () {
 

@@ -60,7 +60,20 @@ class ProjectController extends Controller
 
     }
 
-    // Todo: create project with its tasks; update project
+    public function update(Project $project, ProjectStoreRequest $request): JsonResponse
+    {
+        $projectData = new ProjectDto(
+            creator_id: auth_user()->id,
+            title: $request->safe()->string('title'),
+            description: $request->safe()->string('description'),
+            deadline: $request->safe()->date('deadline'),
+        );
+
+        $project = $this->projectRepository->updateProject($project, $projectData);
+
+        return response()->json($project, 200);
+
+    }
 
     /**
      * Remove the specified resource from storage.
