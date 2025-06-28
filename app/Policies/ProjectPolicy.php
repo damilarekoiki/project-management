@@ -24,7 +24,7 @@ class ProjectPolicy
             ->where('assignee_id', $user->id)
             ->exists();
 
-        return ($user->isCreatorOfProject($project) && $user->isAdmin()) || $userIsAssignedTask;
+        return $user->isCreatorOfProject($project) || $userIsAssignedTask;
     }
 
     /**

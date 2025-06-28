@@ -5,7 +5,7 @@
 
 ## Setup
 
-Create env file
+Create env file.
 
     cp .env.example .env
 
@@ -47,25 +47,25 @@ Password
 
 ## Technologies used
 
-- Laravel for the backend
+- Laravel for the backend.
 
-- Sanctum for authentication
+- Sanctum for authentication.
 
-- Vue.js for frontend
+- Vue.js for frontend.
 
-- Inertia to handle navigation of pages
+- Inertia to handle navigation of pages.
 
-- MySQL for database
+- MySQL for database.
 
-- PestPHP for test
+- PestPHP for test.
 
-- Larastan for PHP static code analysis to capture future possible code errors
+- Larastan for PHP static code analysis to capture future possible code errors.
 
-- ESLint for Javascript static code analysis
+- ESLint for Javascript static code analysis.
 
-- Pint(PHP) and Prettier(Javascript) for consistent code styling
+- Pint(PHP) and Prettier(Javascript) for consistent code styling.
 
-- Husky to handle pre-commits (runs static analysis and code style tools before every commit)
+- Husky to handle pre-commits (runs static analysis and code style tools before every commit).
 
 
 ## Architecture
@@ -74,34 +74,61 @@ Password
 
 - Repository pattern - I made use of the repository pattern so as to delegate communication to a database table to just one class.
 
-- Action pattern - I created some invokable controllers to handle only one concern
+- Action pattern - I created some invokable controllers to handle only one concern.
 
 
-## Project Structure
+## Code Project Structure
 
-- Models - Project, Task, and User models 
+- Models - Project, Task, and User models.
 
-- Observers - Project and Task observers to listen to transactions that happen in projects and tasks tables. Registered to the models using the `ObservedBy` attribute
+- Observers - Project and Task observers to listen to transactions that happen in projects and tasks tables. Registered to the models using the `ObservedBy` attribute.
 
-- Policies - Project and Task policies to handle authorization of admin and non-admin access. Registered to the models using the `UsePolicy` attribute
+- Policies - Project and Task policies to handle authorization of admin and non-admin access. Registered to the models using the `UsePolicy` attribute.
 
-- Repositories - Project and Task repositories to delegate db transactions to these classes
+- Repositories - Project and Task repositories to delegate db transactions to these classes.
 
-- helper.php - I created this because I needed the auth user globally
+- helper.php - I created this because I needed the auth user globally.
 
-- DTOs - I created DTO classes to encapsulate project and task filters data
+- DTOs - I created DTO classes to encapsulate project and task filters data.
 
-- Enums - To register constants and prevent duplicating their values
+- Enums - To register constants and prevent duplicating their values.
 
-- FormRequests - For requests validation
+- FormRequests - For requests validation.
 
-- Routes -  api.php and web.php
+- Routes -  api.php and web.php.
 
-- Controllers - Web controllers to render Inertia components, Api controllers to handle the API requests
+- Controllers - Web controllers to render Inertia components, Api controllers to handle the API requests.
 
-- Seeders - To populate the database
+- Seeders - To populate the database.
 
-- Factories - To create fake data for testing purpose
+- Factories - To create fake data for testing purpose.
+
+## Tasks of a project on the frontend
+
+- Multiple tasks can be created at once.
+
+- During update, only the tasks whose values are changed will be sent to the backend.
+
+- Assignees can also be searched and selected.
+
+- The tasks can be filtered by status or due date.
+
+- The tasks are paginated with infinite scroll.
+
+
+## Authorization
+
+- Only admin can create, update, and delete a project.
+
+- Only the project creator and assignees can view a project.
+
+- Only admin can create and delete a task.
+
+- The task creator (who is an admin) can update all the details a task.
+
+- An assignee can update only the status of a task.
+
+- An authenticated user can view the dashboard and the metrics.
 
 
 ## Test
