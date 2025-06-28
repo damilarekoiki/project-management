@@ -50,6 +50,9 @@ const removeTask = async (taskId: number | undefined): Promise<void> => {
     if (taskId !== undefined) {
         if (props.isEdit) {
             const confirmed = window.confirm('The task will be permantly deleted');
+            if (!confirmed) {
+                return;
+            }
             if (confirmed) {
                 try {
                     await axios.delete(
@@ -229,17 +232,7 @@ onMounted(() => {
                 <div v-if="task.assignee_id !== null && !searchResult.length" class="mt-2 text-sm">
                     <span class="font-medium">Selected: </span>
                     <span>{{ assignee?.name }}</span>
-                    <button
-                        type="button"
-                        class="ml-2 text-red-500 hover:text-red-700"
-                        @click="
-                            () => {
-                                removeAssignee;
-                            }
-                        "
-                    >
-                        ×
-                    </button>
+                    <Button variant="ghost" class="ml-2 text-red-500 hover:text-red-700" @click="removeAssignee"> × </Button>
                 </div>
             </div>
         </div>

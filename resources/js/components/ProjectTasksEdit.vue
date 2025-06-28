@@ -95,6 +95,11 @@ const hasFormError = computed((): boolean => {
     return hasTaskError.value;
 });
 
+const clearFilters = () => {
+    taskStatusFilter.value = '';
+    taskDateFilter.value = '';
+};
+
 const updateTasks = async () => {
     try {
         await axios.patch(route('api.projects.tasks.update', { project: project.id }), form.value);
@@ -180,6 +185,9 @@ onUnmounted(() => {
             <div class="w-5/12">
                 <Label for="dueDate">Filter by Due Date</Label>
                 <Input id="dueDate" v-model="taskDateFilter" type="date" class="w-full !bg-white text-gray-900" />
+            </div>
+            <div class="w-1/12" v-if="taskDateFilter || taskStatusFilter">
+                <Button variant="ghost" @click="clearFilters" size="sm" class="text-xs text-red-400"> Clear filters </Button>
             </div>
         </div>
 
