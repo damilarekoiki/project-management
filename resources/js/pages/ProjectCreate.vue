@@ -64,7 +64,7 @@ const checkTaskError = () => {
     const error = form.value.tasks.some((task: TaskType): boolean => {
         return task.title == '';
     });
-    formChanged.value = Object.values(formState.value).some((state) => state == true);
+    formChanged.value = Object.values(formState.value)?.length == 0 || Object.values(formState.value).some((state) => state == true);
     hasTaskError.value = error;
 };
 
@@ -103,6 +103,8 @@ const addTaskToForm = (task: TaskType, taskId: number) => {
 
 // Remove a task from the form and DOM
 const removeTask = (taskId: number): void => {
+    delete formState.value[taskId];
+
     form.value.tasks = form.value.tasks.filter((task: TaskType) => {
         return task.id !== taskId;
     });

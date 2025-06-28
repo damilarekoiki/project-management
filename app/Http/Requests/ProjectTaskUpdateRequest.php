@@ -25,10 +25,10 @@ class ProjectTaskUpdateRequest extends FormRequest
     {
         return [
             //
-            'tasks' => 'array',
+            'tasks' => 'required|array|min:1',
             'tasks.*.id' => 'integer|exists:tasks,id',
             'tasks.*.assignee_id' => 'nullable|integer|exists:users,id',
-            'tasks.*.title' => ['nullable', 'string', 'max:255'],
+            'tasks.*.title' => ['required', 'string', 'max:255'],
             'tasks.*.status' => ['nullable', 'string', Rule::enum(TaskStatus::class)],
             'tasks.*.due_date' => ['nullable', Rule::date()->todayOrAfter()],
         ];

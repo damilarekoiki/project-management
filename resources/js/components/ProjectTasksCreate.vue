@@ -71,7 +71,6 @@ const addTaskToForm = (task: TaskType, taskId: number) => {
     } else {
         form.value.tasks.push(task);
     }
-    console.log('reached here');
 
     checkTaskError();
 };

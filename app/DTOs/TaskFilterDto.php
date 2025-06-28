@@ -14,6 +14,6 @@ class TaskFilterDto
      */
     public function hasFilters(): bool
     {
-        return $this->status !== null || $this->due_date !== null;
+        return filled($this->status) || filled($this->due_date);
     }
 }

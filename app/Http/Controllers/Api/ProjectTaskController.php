@@ -26,7 +26,7 @@ class ProjectTaskController extends Controller
         // Create filter DTO from request parameters
         $filters = new TaskFilterDto(
             status: $request->string('status'),
-            due_date: $request->date('due_date')
+            due_date: $request->filled('due_date') ? $request->date('due_date')?->format('Y-m-d') : ''
         );
 
         $tasks = $this->taskRepository->getProjectTasks($project, auth_user()->id, $filters);

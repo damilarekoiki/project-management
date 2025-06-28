@@ -29,7 +29,7 @@ class ProjectStoreRequest extends FormRequest
             'deadline' => ['nullable', Rule::date()->todayOrAfter()],
             'tasks' => 'array',
             'tasks.*.assignee_id' => 'nullable|integer|exists:users,id',
-            'tasks.*.title' => ['nullable', 'string', 'max:255'],
+            'tasks.*.title' => ['required', 'string', 'max:255'],
             'tasks.*.status' => ['nullable', 'string', Rule::enum(TaskStatus::class)],
             'tasks.*.due_date' => ['nullable', Rule::date()->todayOrAfter()],
         ];
