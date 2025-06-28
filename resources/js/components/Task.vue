@@ -232,7 +232,7 @@ onMounted(() => {
                 <div v-if="task.assignee_id !== null && !searchResult.length" class="mt-2 text-sm">
                     <span class="font-medium">Selected: </span>
                     <span>{{ assignee?.name }}</span>
-                    <Button variant="ghost" class="ml-2 text-red-500 hover:text-red-700" @click="removeAssignee"> × </Button>
+                    <Button variant="ghost" class="ml-2 text-red-500 hover:text-red-700" @click="removeAssignee"> x </Button>
                 </div>
             </div>
         </div>
