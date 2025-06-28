@@ -51,7 +51,7 @@ Password
 
 - Sanctum for authentication.
 
-- Vue.js for frontend.
+- Vue.js and TypeScript for frontend.
 
 - Inertia to handle navigation of pages.
 
