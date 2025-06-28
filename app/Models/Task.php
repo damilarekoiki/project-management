@@ -6,6 +6,7 @@ use App\DTOs\TaskFilterDto;
 use App\Enums\TaskStatus;
 use App\Observers\TaskObserver;
 use App\Policies\TaskPolicy;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
@@ -63,7 +64,14 @@ class Task extends Model
             $query->where('status', $filters?->status);
         })
             ->when(filled($filters?->due_date), function () use ($query, $filters) {
-                $query->whereDate('due_date', $filters?->due_date);
+
+                /** @var CarbonImmutable $dueDate */
+                $dueDate = $filters?->due_date;
+
+                $start = $dueDate->startOfDay();
+                $end = $dueDate->endOfDay();
+
+                $query->whereBetween('due_date', [$start, $end]);
             });
     }
 }

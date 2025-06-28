@@ -158,14 +158,14 @@ describe('API Task Viewing', function () {
     });
 
     it('filters tasks by due date when provided', function () {
-        $today = now()->format('Y-m-d');
+        $today = now();
         Task::factory()->create([
             'project_id' => $this->project->id,
             'due_date' => $today,
         ]);
         Task::factory()->create([
             'project_id' => $this->project->id,
-            'due_date' => now()->addDays(5)->format('Y-m-d'),
+            'due_date' => now()->addDays(5),
         ]);
 
         $response = $this->actingAs($this->adminUser, 'sanctum')

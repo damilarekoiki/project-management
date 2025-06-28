@@ -21,8 +21,8 @@ return new class extends Migration
             );
             $table->string('title');
             $table->enum('status', array_column(TaskStatus::cases(), 'value'))
-                ->default(TaskStatus::PENDING->value);
-            $table->timestamp('due_date')->nullable();
+                ->default(TaskStatus::PENDING->value)->index();
+            $table->timestamp('due_date')->nullable()->index();
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();
         });

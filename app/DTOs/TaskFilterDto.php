@@ -2,11 +2,13 @@
 
 namespace App\DTOs;
 
+use Carbon\CarbonImmutable;
+
 class TaskFilterDto
 {
     public function __construct(
         public readonly ?string $status = null,
-        public readonly ?string $due_date = null,
+        public readonly ?CarbonImmutable $due_date = null,
     ) {}
 
     /**

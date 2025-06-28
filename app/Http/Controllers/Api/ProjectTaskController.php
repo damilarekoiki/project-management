@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 use App\Repositories\TaskRepository;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -23,10 +24,13 @@ class ProjectTaskController extends Controller
     {
         Gate::authorize('view', $project);
 
+        /** @var CarbonImmutable|null $dueDate */
+        $dueDate = $request->date('due_date');
+
         // Create filter DTO from request parameters
         $filters = new TaskFilterDto(
             status: $request->string('status'),
-            due_date: $request->filled('due_date') ? $request->date('due_date')?->format('Y-m-d') : ''
+            due_date: $dueDate
         );
 
         $tasks = $this->taskRepository->getProjectTasks($project, auth_user()->id, $filters);
