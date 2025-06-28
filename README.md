@@ -103,7 +103,7 @@ Password
 
 - Factories - To create fake data for testing purpose.
 
-## Tasks of a project on the frontend
+## Tasks in a project on the frontend
 
 - Multiple tasks can be created at once.
 
