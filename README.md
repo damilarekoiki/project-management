@@ -79,7 +79,7 @@ Password
 
 ## Project Structure
 
-- Models - Instances 
+- Models - Project, Task, and User models 
 
 - Observers - Project and Task observers to listen to transactions that happen in projects and tasks tables. Registered to the models using the `ObservedBy` attribute
 
