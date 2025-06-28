@@ -18,8 +18,20 @@ class DatabaseSeeder extends Seeder
         /** @var array<string, mixed> $userData */
         $userData = User::factory()->raw([
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'admin@gmail.com',
             'role' => UserRole::ADMIN->value,
+        ]);
+
+        User::updateOrCreate(
+            ['email' => $userData['email']],
+            $userData
+        );
+
+        /** @var array<string, mixed> $userData */
+        $userData = User::factory()->raw([
+            'name' => 'Test User',
+            'email' => 'nonadmin@gmail.com',
+            'role' => UserRole::NON_ADMIN->value,
         ]);
 
         User::updateOrCreate(
