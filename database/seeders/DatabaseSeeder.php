@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
 
         /** @var array<string, mixed> $userData */
         $userData = User::factory()->raw([
-            'name' => 'Test User',
+            'name' => 'Admin User',
             'email' => 'admin@gmail.com',
             'role' => UserRole::ADMIN->value,
         ]);
@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
 
         /** @var array<string, mixed> $userData */
         $userData = User::factory()->raw([
-            'name' => 'Test User',
+            'name' => 'Nonadmin User',
             'email' => 'nonadmin@gmail.com',
             'role' => UserRole::NON_ADMIN->value,
         ]);
