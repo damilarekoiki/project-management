@@ -70,9 +70,9 @@ Password
 
 ## Architecture
 
-- MVC pattern - I made used of the MVC pattern using `Inertia.js` to controll the flow of page navigation. This was done to speed up implementation and delivery of this task, and also to have just 1 code repository instead of 2. I also have `APIs` set up in api.php to handle REST requests coming from Vue.js. `Sanctum` is best fit for this application as it handles both stateful and stateless(REST) requests authentications.
+- MVC pattern - I made use of the MVC pattern; using the Eloquent model, contollers, and then for the view, I used `Inertia.js` to render Vue components. I used Inertia so as to speed up the implementation and the delivery of this task, and also to have only 1 code repository instead of 2. I also have `APIs` set up in api.php to handle REST requests coming from the Vue components. `Sanctum` is best fit for the authentication of this application as it handles both stateful and stateless(REST) requests authentications.
 
-- Repository pattern - I made use of the repository pattern so as to delegate communication to a database table to just one class.
+- Repository pattern - I made use of the repository pattern so as to delegate transactions on a database table to just one class.
 
 - Action pattern - I created some invokable controllers to handle only one concern.
 
@@ -91,17 +91,19 @@ Password
 
 - DTOs - I created DTO classes to encapsulate project and task filters data.
 
-- Enums - To register constants and prevent duplicating their values.
+- Enums - I created these to register constants and prevent duplicating their values.
 
-- FormRequests - For requests validation.
+- FormRequests - I created these to validate requests.
 
 - Routes -  api.php and web.php.
 
-- Controllers - Web controllers to render Inertia components, Api controllers to handle the API requests.
+- Controllers - I created Web controllers to render Inertia components, and Api controllers to handle the API requests.
 
 - Seeders - To populate the database.
 
 - Factories - To create fake data for testing purpose.
+
+- Migration files - To create database tables
 
 ## Tasks in a project on the frontend
 
