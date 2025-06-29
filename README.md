@@ -124,7 +124,7 @@ Password
 
 - Only admin can create and delete a task.
 
-- The task creator (who is an admin) can update all the details a task.
+- The task creator (who is currently an admin) can update all the details of a task.
 
 - An assignee can update only the status of a task.
 

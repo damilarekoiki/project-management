@@ -74,7 +74,7 @@ class ProjectTaskController extends Controller
 
         $taskIds = $this->taskRepository->getPersistingIds();
 
-        Gate::allowIf(fn (User $user) => $this->taskRepository->canConfirmUserOwnership($taskIds, $user) || $user->isAdmin());
+        Gate::allowIf(fn (User $user) => $this->taskRepository->canConfirmUserOwnership($taskIds, $user) || ($user->isCreatorOfProject($project) && $user->isAdmin()));
 
         $update = auth_user()->isAdmin() ? null : ['status'];
 
