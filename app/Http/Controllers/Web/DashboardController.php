@@ -17,12 +17,14 @@ class DashboardController extends Controller
      */
     public function __invoke(Request $request): InertiaResponse
     {
-        //
+        // Delete the cache of tasks completed yesterday
+        Cache::forget(Task::getCacheKeyCompletedYesterday());
+
         return Inertia::render('Dashboard', [
             'total_projects' => Cache::rememberForever('total-projects', function () {
                 return Project::count();
             }),
-            'total_tasks_completed_today' => Cache::rememberForever('total-tasks-completed-today', function () {
+            'total_tasks_completed_today' => Cache::rememberForever(Task::getCacheKeyCompletedToday(), function () {
                 return Task::whereDate('completed_at', today())
                     ->count();
             }),

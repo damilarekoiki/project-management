@@ -13,7 +13,7 @@ class TaskObserver
     public function created(Task $task): void
     {
         //
-        Cache::forget('total-tasks-completed-today');
+        Cache::forget(Task::getCacheKeyCompletedToday());
     }
 
     /**
@@ -22,7 +22,7 @@ class TaskObserver
     public function updated(Task $task): void
     {
         //
-        Cache::forget('total-tasks-completed-today');
+        Cache::forget(Task::getCacheKeyCompletedToday());
     }
 
     /**
@@ -31,7 +31,7 @@ class TaskObserver
     public function deleted(Task $task): void
     {
         //
-        Cache::forget('total-tasks-completed-today');
+        Cache::forget(Task::getCacheKeyCompletedToday());
     }
 
     /**

@@ -80,7 +80,7 @@ class ProjectTaskController extends Controller
 
         $this->taskRepository->updateProjectTasks($project, $tasks, $update);
 
-        Cache::forget('total-tasks-completed-today');
+        Cache::forget(Task::getCacheKeyCompletedToday());
 
         return response()->json([], 200);
 

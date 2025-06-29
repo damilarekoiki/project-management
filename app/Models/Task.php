@@ -74,4 +74,14 @@ class Task extends Model
                 $query->whereBetween('due_date', [$start, $end]);
             });
     }
+
+    public static function getCacheKeyCompletedToday(): string
+    {
+        return 'total-tasks-completed-'.today()->toDateString();
+    }
+
+    public static function getCacheKeyCompletedYesterday(): string
+    {
+        return 'total-tasks-completed-'.today()->subDay()->toDateString();
+    }
 }
